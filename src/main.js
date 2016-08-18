@@ -43,7 +43,11 @@ function createWindow() {
     const mainMenu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(mainMenu);
 
+    win.once("ready-to-show", () => {
+        win.show();
+    });
 
+     
     // Clean win var if closed
     win.on("closed", () => {
         win = null;

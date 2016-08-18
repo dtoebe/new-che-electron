@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-    <!--
+<!--
  * Copyright (c) 2016 Daniel Toebe
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@
  * Contributors:
  *     Daniel Toebe
     -->
+
 <head>
     <meta charset="UTF-8" />
     <title>Document</title>
@@ -36,28 +37,9 @@
     <!--
         TODO create a modal window to load/start local server or connect to remote server onLoad
        -->
-    <webview id="webview" autosize="on"></webview>
+    <webview id="webview" preload="js/preload.js" autosize="on"></webview>
 
-    <script>
-        // Load electron meesaging
-        var ipcRenderer = require("electron").ipcRenderer;
-        var webview = document.getElementById("webview");
-
-        // If Start Local menu item used load default local docker page
-        ipcRenderer.on("http://localhost:8080", function(data) {
-            console.log(data);
-            webview.src = "http://localhost:8080";
-            webview.style.display = "inline-flex";
-        });
-
-     // If Stop Local menu item used clear out webview src and hide
-     // TODO create default view with proper branding so its not a white screen
-        ipcRenderer.on("close", function(data) {
-            console.log(data);
-            webview.src = "";
-            webview.style.display = "none";
-        });
-    </script>
+    <script type="text/javascript" src="js/main.js"></script>
 </body>
 
 </html>

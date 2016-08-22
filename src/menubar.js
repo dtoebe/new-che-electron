@@ -33,14 +33,19 @@ function serverCMD(item, focusedWindow, command, win) {
         if(error !== null) {
             console.log("exec error: " + error);
         }
-
+        let loadData = {url: ""};
         // Emit needed signals to main-win.html
         //TODO Pipe stdout/stderr to main-win.html
         if(command === "start") {
-            win.webContents.send("http://localhost:8080");
+            loadData = {
+                url: "http://localhost:8080"
+            };
         } else if(command == "stop") {
-            win.webContents.send("close");
+            loadData = {
+                url: ""
+            };
         }
+        win.webContents.send("load-data", JSON.stringify(loadData));
     });
 }
 

@@ -36,7 +36,7 @@ function createWindow() {
     //TODO creat the possibility to use input cli args as url, like in original app
     win.loadURL("file://" + __dirname + "/html/main-win.html");
 
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
 
     // Load menubar template
     const template = require("./menubar.js")(win, ipcMain);

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-    <!--
+<!--
  * Copyright (c) 2016 Daniel Toebe
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,25 +11,11 @@
  * Contributors:
  *     Daniel Toebe
     -->
+
 <head>
     <meta charset="UTF-8" />
     <title>Document</title>
-    <style>
-        body,
-        html {
-            height: 100%;
-            paading: 0;
-            margin: 0 auto;
-            overflow: hidden;
-        }
-        
-        #webview {
-            min-height: 100%;
-            width: 100%;
-            margin: 0 auto;
-            display: none;
-        }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main-win.css" />
 </head>
 
 <body>
@@ -39,28 +25,7 @@
     <webview id="webview" autosize="on"></webview>
 
     <script>
-        // Load electron meesaging
-     var ipcRenderer = require("electron").ipcRenderer;
-     var webview = document.getElementById("webview");
-
-     webview.addEventListener("new-window", (e) => {
-         require("electron").shell.openExternal(e.url);
-     });
-
-        // If Start Local menu item used load default local docker page
-        ipcRenderer.on("http://localhost:8080", function(data) {
-            console.log(data);
-            webview.src = "http://localhost:8080";
-            webview.style.display = "inline-flex";
-        });
-
-     // If Stop Local menu item used clear out webview src and hide
-     // TODO create default view with proper branding so its not a white screen
-        ipcRenderer.on("close", function(data) {
-            console.log(data);
-            webview.src = "";
-            webview.style.display = "none";
-        });
+        require("./main-win.js")
     </script>
 </body>
 

@@ -40,8 +40,12 @@
 
     <script>
         // Load electron meesaging
-        var ipcRenderer = require("electron").ipcRenderer;
-        var webview = document.getElementById("webview");
+     var ipcRenderer = require("electron").ipcRenderer;
+     var webview = document.getElementById("webview");
+
+     webview.addEventListener("new-window", (e) => {
+         require("electron").shell.openExternal(e.url);
+     });
 
         // If Start Local menu item used load default local docker page
         ipcRenderer.on("http://localhost:8080", function(data) {

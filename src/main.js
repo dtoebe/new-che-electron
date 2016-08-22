@@ -23,7 +23,8 @@ const Menu = electron.Menu;
 const ipcMain = electron.ipcMain;
 
 let mainWin = null;
-let secondaryWin = null;
+let secondaryWin = [];
+let secondaryObj = {};
 
 //Controller for starting and controlling the main view
 function createWindow() {
@@ -31,7 +32,7 @@ function createWindow() {
         width: 1024,
         height: 768,
         frame: true
-        // "node-integration": false
+            // "node-integration": false
     });
 
     //TODO creat the possibility to use input cli args as url, like in original app
@@ -49,32 +50,50 @@ function createWindow() {
     mainWin.on("closed", () => {
         mainWin = null;
     });
+}
 
-    secondaryWin = new BrowserWindow({
-        width: 1024,
-        height: 600,
-        frame: true,
-        show: false
+
+// this function creates a new secondary window
+// adds it to an array
+// and can be removed from array
+// TODO getting strange new IDE window. Need to investigate.
+function createSecondaryWin(url) {
+
+    secondaryObj = {
+        window: new BrowserWindow({
+            width: 1040,
+            height: 768,
+            frame: true,
+            show: true
+        }),
+        url: url,
+        id: "1234"
+    };
+
+    secondaryWin.push(secondaryObj);
+    let count = secondaryWin.length - 1;
+    secondaryWin[count].window
+        .loadURL("file://" + __dirname + "/windows/secondary-win/secondary-win.html?" +
+            secondaryWin[count].id);
+    secondaryWin[count].window.on("closed", () => {
+        secondaryWin[count].window = null;
+        secondaryWin.pop(count);
+        //TODO add focus to mainWin;
     });
 
-    secondaryWin.on("closed", () => {
-        secondaryWin = null;
-        //TODO add focus to mainWin;
-
+    secondaryWin[count].window.webContents.on("did-finish-load", () => {
+        secondaryWin[count].window.webContents.send(secondaryWin[count].id, url);
     });
 }
 
+
 //when the main-win sends a new win msg: shows second window
-//TODO create secondwin when needed. do not load in bg
 ipcMain.on("new-win", (event, msg) => {
-    secondaryWin.show(true);
+
     console.log(msg);
-    secondaryWin.loadURL("file://" + __dirname + "/windows/secondary-win/secondary-win.html");
 
     //When second window is done loading send message
-    secondaryWin.webContents.on("did-finish-load", () => {
-        secondaryWin.webContents.send("1234", msg);
-    });
+    createSecondaryWin(msg);
 });
 
 
@@ -82,7 +101,7 @@ app.on("ready", createWindow);
 
 app.on("window-all-closed", () => {
     // Make sure to not completely close if OSX
-    if(process.platform !== "darwin") {
+    if (process.platform !== "darwin") {
         app.quit();
     }
 });

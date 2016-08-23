@@ -1,6 +1,5 @@
 /* jshint node: true */
 /* jshint esversion: 6 */
-/* jshint browser: true */
 
 /*
  * Copyright (c) 2016 Daniel Toebe
@@ -15,11 +14,6 @@
  */
 
 
-"use strict";
+"use-strict";
 
-let btnLocalDefault = document.getElementById("btn-local-default");
-let ipcRenderer = require("electron").ipcRenderer;
-
-btnLocalDefault.addEventListener("click", (event) => {
-    ipcRenderer.send("url-data", "{\"url\": \"http://localhost:8080\"}");
-});
+// Will move all ipc calls here

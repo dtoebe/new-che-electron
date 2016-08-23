@@ -21,10 +21,13 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 const ipcMain = electron.ipcMain;
+const Windows = require("./windows.js");
 
-let mainWin = null;
-let secondaryWin = null;
 
+
+//DEPRECATED: all logic in createWindow is now going to be found
+// in windows.js module
+//Leaving here for reference until windows.js module is done
 //Controller for starting and controlling the main view
 function createWindow() {
     mainWin = new BrowserWindow({
@@ -37,7 +40,7 @@ function createWindow() {
     //TODO creat the possibility to use input cli args as url, like in original app
     mainWin.loadURL("file://" + __dirname + "/windows/server-login/server-login.html");
 
-    mainWin.webContents.openDevTools();
+    // mainWin.webContents.openDevTools();
 
     // Load menubar template
     const template = require("./menubar.js")(mainWin, ipcMain);
@@ -77,8 +80,18 @@ ipcMain.on("new-win", (event, msg) => {
     });
 });
 
+ipcMain.on("url-data", (event, msg) => {
+    mainWin.loadURL("file://" + __dirname + "/windows/main-win/main-win.html");
 
-app.on("ready", createWindow);
+    mainWin.webContents.on("did-finish-load", () => {
+        mainWin.webContents.send("load-data", msg);
+    });
+}); 
+
+
+app.on("ready", () => {
+    Windows.serverLoginScreen(BrowserWindow);
+});
 
 app.on("window-all-closed", () => {
     // Make sure to not completely close if OSX

@@ -18,91 +18,64 @@
 
 const electron = require("electron");
 const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
-const ipcMain = electron.ipcMain;
-const Windows = require("./windows.js");
+// const ipcMain = electron.ipcMain;
+const window = require("./windows.js");
+const exec = require("child_process").exec;
 
+let Windows = new window(electron);
+let channel = "";
 
+const ipc = require("./ipc.js")(electron, Windows);
 
-//DEPRECATED: all logic in createWindow is now going to be found
-// in windows.js module
-//Leaving here for reference until windows.js module is done
-//Controller for starting and controlling the main view
-function createWindow() {
-    mainWin = new BrowserWindow({
-        width: 1024,
-        height: 768,
-        frame: true
-        // "node-integration": false
-    });
-
-    //TODO creat the possibility to use input cli args as url, like in original app
-    mainWin.loadURL("file://" + __dirname + "/windows/server-login/server-login.html");
-
-    // mainWin.webContents.openDevTools();
-
-    // Load menubar template
-    const template = require("./menubar.js")(mainWin, ipcMain);
-    const mainMenu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(mainMenu);
-
-
-    // Clean win var if closed
-    mainWin.on("closed", () => {
-        mainWin = null;
-    });
-
-    secondaryWin = new BrowserWindow({
-        width: 1024,
-        height: 600,
-        frame: true,
-        show: false
-    });
-
-    secondaryWin.on("closed", () => {
-        secondaryWin = null;
-        //TODO add focus to mainWin;
-
-    });
-}
-
-//when the main-win sends a new win msg: shows second window
 //TODO create secondwin when needed. do not load in bg
-ipcMain.on("new-win", (event, msg) => {
-    secondaryWin.show(true);
-    console.log(msg);
-    secondaryWin.loadURL("file://" + __dirname + "/windows/secondary-win/secondary-win.html");
+// ipcMain.on("new-win", (event, msg) => {
+//     secondaryWin.show(true);
+//     console.log(msg);
+//     secondaryWin.loadURL("file://" + __dirname + "/windows/secondary-win/secondary-win.html");
 
-    //When second window is done loading send message
-    secondaryWin.webContents.on("did-finish-load", () => {
-        secondaryWin.webContents.send("1234", msg);
-    });
-});
+//     //When second window is done loading send message
+//     secondaryWin.webContents.on("did-finish-load", () => {
+//         secondaryWin.webContents.send("1234", msg);
+//     });
+// });
 
-ipcMain.on("url-data", (event, msg) => {
-    mainWin.loadURL("file://" + __dirname + "/windows/main-win/main-win.html");
+// ipcMain.on("url-data", (event, msg) => {
+//     Windows.mainWindow.loadURL("file://" + __dirname + "/windows/main-win/main-win.html");
 
-    mainWin.webContents.on("did-finish-load", () => {
-        mainWin.webContents.send("load-data", msg);
-    });
-}); 
+//     Windows.mainWindow.webContents.on("did-finish-load", () => {
+//         Windows.mainWindow.webContents.send("load-data", msg);
+//     });
+// }); 
 
 
 app.on("ready", () => {
-    Windows.serverLoginScreen(BrowserWindow);
+    Windows.serverLoginScreen();
 });
 
 app.on("window-all-closed", () => {
     // Make sure to not completely close if OSX
+    const localDockerCMD = "docker run --rm -t -v /var/run/docker.sock:/var/run/docker.sock -e CHE_HOST=172.17.0.1 eclipse/che";
     if(process.platform !== "darwin") {
+        exec(localDockerCMD + " stop", (error, stdout, stderr) => {
+            console.log("stdout: " + stdout);
+            console.log("stderr: " + stderr);
+
+            if (error !== null) {
+                console.log("exec error: " + error);
+            }
+            // Emit needed signals to main-win.html
+            //TODO Pipe stdout/stderr to main-win.html
+
+            Windows.mainWindow.webContents.send("ide-send", msg);
+        });
         app.quit();
     }
 });
 
 //Start the main view
 app.on("active", () => {
-    if (mainWin === null) {
-        createWindow();
+    if (Windows.mainWindow === null) {
+        Windows.serverLoginScreen();
     }
 });

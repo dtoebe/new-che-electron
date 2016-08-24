@@ -19,7 +19,6 @@
 const electron = require("electron");
 const app = electron.app;
 const Menu = electron.Menu;
-// const ipcMain = electron.ipcMain;
 const window = require("./windows.js");
 const exec = require("child_process").exec;
 

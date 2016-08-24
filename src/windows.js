@@ -16,44 +16,46 @@
 
 "use-strict";
 
-class Window {
+//predefined globals
+let mainWindow = null; //Login screen / IDE screen
+let secondaryWindows = []; //Array for any secondary windows
 
-    constructor(electron) {
-        this.mainWindow = null;
-        this.secondaryWindows = [];
-        this.BrowserWindow = electron.BrowserWindow;
-    }
+//Export structure
+module.exports = {
+    mainWindow: mainWindow,
+    serverLoginScreen: serverLoginScreen,
+    ideScreen: ideScreen,
+    secondaryWindows: secondaryWindows,
+    secondaryWindowCreator: secondaryWindowCreator
+};
 
-    //Init screen: to choose different options to load Che server
-    serverLoginScreen() {
-        this.mainWindow = new this.BrowserWindow({
-            width: 1024,
-            height: 768,
-            frame: true
-        });
+//Init screen: to choose different options to load Che server
+function serverLoginScreen(BrowserWindow) {
+    mainWindow = new BrowserWindow({
+        width: 1024,
+        height: 768,
+        frame: true
+    });
 
-        this.mainWindow.loadURL(
-            "file://" + __dirname + "/windows/server-login/server-login.html");
+    mainWindow.loadURL(
+        "file://" + __dirname + "/windows/server-login/server-login.html");
 
-        this.mainWindow.on("closed", () => {
-            this.mainWindow = null;
-        });
-    }
-
-    //Switches login screen to ide screen once server has been chosen
-    ideScreen(url) {
-        this.mainWindow.loadURL("file://" + __dirname + "/windows/ide-win/ide-win.html");
-
-        this.mainWindow.webContents.on("did-finish-load", () => {
-            this.mainWindow.webContents.send("load-ide", url);
-        });
-    }
-
-
-    //Will load additional windows, such as noVNC
-    secondaryWindowCreator() {
-
-    }
+    mainWindow.on("closed", () => {
+        mainWindow = null;
+    });
 }
 
-module.exports = Window;
+//Switches login screen to ide screen once server has been chosen
+function ideScreen(url) {
+    mainWindow.loadURL("file://" + __dirname + "/windows/ide-win/ide-win.html");
+
+    mainWindow.webContents.on("did-finish-load", () => {
+        mainWindow.webContents.send("load-ide", url);
+    });
+}
+
+
+//Will load additional windows, such as noVNC
+function secondaryWindowCreator() {
+
+}

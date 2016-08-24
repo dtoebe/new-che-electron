@@ -20,43 +20,29 @@
 // Load electron messaging
 let ipcRenderer = require("electron").ipcRenderer;
 let webview = document.getElementById("webview");
-let reloadCount = 0;
 
+// Set any new window link target to open default browser
 // TODO create a setting to either open a new window or open default browser
 // TODO create secondary window
 // TODO create way to have persistent data: sqlight?
-
-/******** WebView Event Listeners ***********/
-
-// Set any new window link target to open default browser
 webview.addEventListener("new-window", (event) => {
     // require("electron").shell.openExternal(event.url);
     ipcRenderer.send("new-win", event.url);
 });
 
-//Listen for failed load. i.e. server not started.
-webview.addEventListener("did-fail-load", (event) => {
-    //Chech how many times the webview is unable to load IDE
-    if(reloadCount < 1) {
-        let msg = JSON.stringify({url: webview.src});
-        ipcRenderer.send("ide-fail-load", msg);
-        reloadCount++;
-    } else {
-        //TODO create popup the server is unreachable
-    }
-});
-
-/*********** IPC Listeners **************/
-
-ipcRenderer.on("start-server", (event, msg) => {
-    let msgObj = JSON.parse(msg);
-    setView(msgObj.url, "inline-flex");
-});
-
 // Listen for load-data JSON
-ipcRenderer.on("ide-send", (event, msg) => {
+ipcRenderer.on("load-data", (event, msg) => {
     //convert to object
     let msgObj = JSON.parse(msg);
+    // console.log(msgObj);
+
+    // Simple helper function to set the webview src and display
+    let setView = (src, display) => {
+        webview.src = src;
+        webview.style.display = display;
+    };
+
+    // console.log(msgObj.url.length);
 
     // Test if there is a URL, if not clear webview src and no display
     if (msgObj.url.length !== 0) {
@@ -65,12 +51,3 @@ ipcRenderer.on("ide-send", (event, msg) => {
         setView("", "none");
     }
 });
-
-
-/*********** Utility Functions ****************/
-
-// Simple helper function to set the webview src and display
-function setView(src, display) {
-    webview.src = src;
-    webview.style.display = display;
-}

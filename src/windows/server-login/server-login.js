@@ -17,3 +17,9 @@
 
 "use strict";
 
+let btnLocalDefault = document.getElementById("btn-local-default");
+let ipcRenderer = require("electron").ipcRenderer;
+
+btnLocalDefault.addEventListener("click", (event) => {
+    ipcRenderer.send("ide-load", "{\"url\": \"http://localhost:8080\"}");
+});

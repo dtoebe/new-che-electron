@@ -15,20 +15,37 @@
 <head>
     <meta charset="UTF-8" />
     <title>Document</title>
+    <link type="text/css" rel="stylesheet" href="server-login.css" />
 </head>
 
 <body>
-    <div id="login-win-container">
-        <div id="login-win-container-inner">
-            <div id="login-win-top">
-                <div id="login-win-top-left">
+    <div id="wrapper">
+        <div id="login-win-container">
+            <div id="login-win-container-inner">
+                <div id="login-win-top">
+                    <div id="login-win-top-left">
 
+                    </div>
+                    <div id="login-win-top-bottom">
+                        <div id="login-win-top-center">
+                            <p>Let's Get Started</p>
+                        </div>
+                        <div id="login-win-top-right">
+                            <span id="close">X</span>
+                        </div>
+                    </div>
                 </div>
-                <div id="login-win-top-center">
-                    <p>Let's Get Started</p>
+                <div id="login-win-content">
+                    <div id="login-local-default">
+                        <button id="btn-local-default">Start up a local Che server</button>
+                    </div>
+                    <div id="login-remote">
+                        <input id="remote-input" type="text" placeholder="http://localhost:8080" />
+                        <button id="btn-url-login">Login</button>
+                    </div>
                 </div>
-                <div id="login-win-top-right">
-                    <span id="close">X</span>
+                <div id="login-win-footer">
+
                 </div>
             </div>
             <div id="login-win-content">
@@ -42,9 +59,13 @@
             </div>
             <div id="login-win-footer">
 
+                </div>
             </div>
         </div>
     </div>
+    <script>
+        require("./server-login.js");
+    </script>
 </body>
 
 </html>

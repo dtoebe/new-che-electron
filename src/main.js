@@ -20,8 +20,8 @@ const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
-const ipcMain = electron.ipcMain;
-const Windows = require("./windows.js");
+const window = require("./windows.js");
+const exec = require("child_process").exec;
 
 <<<<<<< HEAD
 
